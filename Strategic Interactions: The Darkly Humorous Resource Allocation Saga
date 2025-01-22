@@ -1,0 +1,58 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import linprog
+
+# Define utility functions for two players in two different scenarios
+def player1_scenario1(x):
+    return 3 * x[0] + 2 * x[1]
+
+def player2_scenario1(x):
+    return 2 * x[0] + 3 * x[1]
+
+def player1_scenario2(x):
+    return 4 * x[0] + x[1]
+
+def player2_scenario2(x):
+    return x[0] + 4 * x[1]
+
+# Define constraints for the linear programming problem
+A = [[-1, 0], [0, -1], [1, 1]]
+b = [0, 0, 1]
+
+# Objective function coefficients (negative for maximization)
+c_scenario1 = [-3, -2]
+c_scenario2 = [-4, -1]
+
+# Solve the linear programming problem for each scenario
+res_scenario1 = linprog(c_scenario1, A_ub=A, b_ub=b, bounds=(0, 1), method='highs')
+res_scenario2 = linprog(c_scenario2, A_ub=A, b_ub=b, bounds=(0, 1), method='highs')
+
+# Extract the Nash Equilibrium for each scenario
+nash_equilibrium_scenario1 = res_scenario1.x
+nash_equilibrium_scenario2 = res_scenario2.x
+
+# Plotting the results
+fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+
+# Scenario 1
+axs[0].plot([0, nash_equilibrium_scenario1[0]], [0, nash_equilibrium_scenario1[1]], 'ro-', label='Nash Equilibrium')
+axs[0].set_xlabel('Resource 1')
+axs[0].set_ylabel('Resource 2')
+axs[0].set_title('Scenario 1: The Classic Dilemma', fontsize=10)
+axs[0].legend()
+axs[0].grid(True)
+
+# Scenario 2
+axs[1].plot([0, nash_equilibrium_scenario2[0]], [0, nash_equilibrium_scenario2[1]], 'bo-', label='Nash Equilibrium')
+axs[1].set_xlabel('Resource 1')
+axs[1].set_ylabel('Resource 2')
+axs[1].set_title('Scenario 2: The Greedy Grab', fontsize=10)
+axs[1].legend()
+axs[1].grid(True)
+
+plt.suptitle('Strategic Interactions: The Darkly Humorous Resource Allocation Saga', fontsize=12)
+plt.tight_layout(rect=[0, 0, 1, 0.96])
+plt.show()
+
+print("Nash Equilibrium for Scenario 1: ", nash_equilibrium_scenario1)
+print("Nash Equilibrium for Scenario 2: ", nash_equilibrium_scenario2)
